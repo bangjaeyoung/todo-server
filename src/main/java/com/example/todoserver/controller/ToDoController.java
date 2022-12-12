@@ -1,8 +1,6 @@
 package com.example.todoserver.controller;
 
-import com.example.todoserver.dto.ToDoPatchDto;
-import com.example.todoserver.dto.ToDoPostDto;
-import com.example.todoserver.dto.ToDoResponseDto;
+import com.example.todoserver.dto.ToDoDto;
 import com.example.todoserver.entity.ToDo;
 import com.example.todoserver.mapper.ToDoMapper;
 import com.example.todoserver.service.ToDoService;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "https://todobackend.com")
 @RestController
@@ -30,32 +27,33 @@ public class ToDoController {
     }
 
     @PostMapping
-    public ResponseEntity postToDo(@Valid @RequestBody ToDoPostDto toDoPostDto) {
-        ToDo toDo = toDoService.createToDo(toDoMapper.toDoPostDtoToToDos(toDoPostDto));
-        return new ResponseEntity<>(toDoMapper.toDosToToDoResponseDto(toDo), HttpStatus.CREATED);
+    public ResponseEntity postToDo(@Valid @RequestBody ToDoDto.Post requestBody) {
+        ToDo toDo = toDoService.createToDo(toDoMapper.postDtoToToDo(requestBody));
+        ToDoDto.Response response = toDoMapper.toDoToResponseDto(toDo);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity getToDos() {
         List<ToDo> toDos = toDoService.findToDos();
-        List<ToDoResponseDto> response = toDos.stream()
-                .map(toDoMapper::toDosToToDoResponseDto)
-                .collect(Collectors.toList());
+        List<ToDoDto.Response> response = toDoMapper.toDosToResponses(toDos);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{todo-id}")
     public ResponseEntity getToDo(@PathVariable("todo-id") @Positive long toDoId) {
         ToDo toDo = toDoService.findToDo(toDoId);
-        return new ResponseEntity<>(toDoMapper.toDosToToDoResponseDto(toDo), HttpStatus.OK);
+        ToDoDto.Response response = toDoMapper.toDoToResponseDto(toDo);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/{todo-id}")
     public ResponseEntity updateToDo(@PathVariable("todo-id") @Positive long toDoId,
-                                     @Valid @RequestBody ToDoPatchDto toDoPatchDto) {
-        toDoPatchDto.setToDoId(toDoId);
-        ToDo toDo = toDoService.updateToDo(toDoMapper.toDoPatchDtoToToDos(toDoPatchDto));
-        return new ResponseEntity<>(toDoMapper.toDosToToDoResponseDto(toDo), HttpStatus.OK);
+                                     @Valid @RequestBody ToDoDto.Patch requestBody) {
+        requestBody.setToDoId(toDoId);
+        ToDo toDo = toDoService.updateToDo(toDoMapper.patchDtoToToDo(requestBody));
+        ToDoDto.Response response = toDoMapper.toDoToResponseDto(toDo);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping

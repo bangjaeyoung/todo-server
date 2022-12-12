@@ -1,37 +1,39 @@
 package com.example.todoserver.mapper;
 
-import com.example.todoserver.dto.ToDoPatchDto;
-import com.example.todoserver.dto.ToDoPostDto;
-import com.example.todoserver.dto.ToDoResponseDto;
+import com.example.todoserver.dto.ToDoDto;
 import com.example.todoserver.entity.ToDo;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ToDoMapper {
-    default ToDo toDoPostDtoToToDos(ToDoPostDto toDoPostDto) {
-            if (toDoPostDto == null) {
-                return null;
-            } else {
-                ToDo toDo = new ToDo();
-                toDo.setTitle(toDoPostDto.getTitle());
-                toDo.setTodo_order((toDoPostDto.getOrder()));
-                toDo.setCompleted(toDoPostDto.getCompleted());
-                return toDo;
-            }
-    }
-
-    default public ToDo toDoPatchDtoToToDos(ToDoPatchDto toDoPatchDto) {
-        if (toDoPatchDto == null) {
+    default ToDo postDtoToToDo(ToDoDto.Post post) {
+        if (post == null) {
             return null;
         } else {
             ToDo toDo = new ToDo();
-            toDo.setToDoId(toDoPatchDto.getToDoId());
-            toDo.setTitle(toDoPatchDto.getTitle());
-            toDo.setTodo_order(toDoPatchDto.getTodo_order());
-            toDo.setCompleted(toDoPatchDto.getCompleted());
+            toDo.setTitle(post.getTitle());
+            toDo.setTodo_order(post.getOrder());
+            toDo.setCompleted(post.getCompleted());
             return toDo;
         }
     }
 
-    ToDoResponseDto toDosToToDoResponseDto(ToDo toDo);
+    default ToDo patchDtoToToDo(ToDoDto.Patch patch) {
+        if (patch == null) {
+            return null;
+        } else {
+            ToDo toDo = new ToDo();
+            toDo.setToDoId(patch.getToDoId());
+            toDo.setTitle(patch.getTitle());
+            toDo.setTodo_order(patch.getOrder());
+            toDo.setCompleted(patch.getCompleted());
+            return toDo;
+        }
+    }
+
+    ToDoDto.Response toDoToResponseDto(ToDo toDo);
+
+    List<ToDoDto.Response> toDosToResponses(List<ToDo> toDos);
 }

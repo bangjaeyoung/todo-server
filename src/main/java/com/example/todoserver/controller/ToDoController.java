@@ -15,7 +15,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "https://todobackend.com")
 @RestController
-@RequestMapping
+@RequestMapping("/")
 @Validated
 public class ToDoController {
     private final ToDoService toDoService;

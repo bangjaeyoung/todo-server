@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.6'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'war' // JAR -> WAR 포맷 변경
 }
 
 group = 'com.example'
